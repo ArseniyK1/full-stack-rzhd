@@ -15,6 +15,7 @@ import { UpdateTravelDto } from './dto/update-travel.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Travel } from './entities/travel.entity';
 import { Repository } from 'typeorm';
+import { DeleteTicketDto } from 'src/tickets/dto/delete-ticket.dto';
 
 @Controller('travel')
 export class TravelController {
@@ -24,8 +25,8 @@ export class TravelController {
   ) {}
 
   @Delete('buy/:id')
-  buy(@Param('id') id: string) {
-    return this.travelService.buy(+id);
+  buy(@Param('id') id: string, @Body() dto: DeleteTicketDto) {
+    return this.travelService.buy(+id, dto);
   }
 
   @UsePipes(new ValidationPipe({ whitelist: true }))

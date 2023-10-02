@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { CreateTravelDto } from './dto/create-travel.dto';
 import { UpdateTravelDto } from './dto/update-travel.dto';
 import { Travel } from './entities/travel.entity';
+import { DeleteTicketDto } from 'src/tickets/dto/delete-ticket.dto';
 
 @Injectable()
 export class TravelService {
@@ -15,9 +16,10 @@ export class TravelService {
     private readonly trainService: TrainService,
   ) {}
 
-  async buy(id: number) {
+  async buy(id: number, dto: DeleteTicketDto) {
     const travel = await this.findOne(id);
-    return this.ticketsService.buy(travel.ticket);
+
+    return this.ticketsService.buy(travel.ticket, dto);
   }
 
   async create(createTravelDto: CreateTravelDto) {

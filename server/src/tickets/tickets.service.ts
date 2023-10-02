@@ -4,14 +4,16 @@ import { Repository } from 'typeorm';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket } from './entities/ticket.entity';
+import { DeleteTicketDto } from './dto/delete-ticket.dto';
 
 @Injectable()
 export class TicketsService {
   constructor(
     @InjectRepository(Ticket) private ticketRepository: Repository<Ticket>,
   ) {}
-  async buy(ticket: Ticket) {
-    ticket.quantity--;
+  async buy(ticket: Ticket, dto: DeleteTicketDto) {
+    const { remove_count } = dto;
+    ticket.quantity = ticket.quantity - remove_count;
     return this.update(ticket.id, ticket);
   }
 
