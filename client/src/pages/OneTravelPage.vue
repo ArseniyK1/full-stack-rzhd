@@ -53,7 +53,7 @@
             </p>
           </div>
           <p class="text-caption" v-if="travel_obj && travel_obj.ticket">
-            Количество доступных билетов: {{ travel_obj.ticket.quantity }}
+            Количество доступных билетов: {{ getCountTickets }}
           </p>
 
           <table v-if="travel_obj && travel_obj.ticket.quantity > 0">
@@ -71,7 +71,7 @@
                     type="checkbox"
                     v-model="selectedSeats[index - 1]"
                     :disabled="
-                      !isSeatAvailable(index - 1) ||
+                      isSeatDisabled(index) ||
                       index > travel_obj.ticket.quantity
                     "
                   />
@@ -122,6 +122,9 @@ export default {
     getDateArrival() {
       return parseDate(this.travel_obj.time_arrival).fullDate;
     },
+    getCountTickets() {
+      return this.travel_obj.ticket.quantity;
+    },
   },
   methods: {
     async findOneTravel() {
@@ -129,7 +132,6 @@ export default {
         `http://localhost:5000/api/travel/${this.travelId}`
       );
       this.travel_obj = res.data;
-      console.log(this.travel_obj);
     },
 
     goBack() {
@@ -139,14 +141,24 @@ export default {
       //  доступно ли место по индексу
       return index < this.travel_obj.ticket.quantity;
     },
+    isSeatDisabled(index) {
+      //  является ли место купленным
+      return this.purchasedSeats[index - 1];
+    },
     async buyTickets() {
       if (this.selectedSeats.length === 0) {
         return;
       }
 
-      // логика для отправки запроса на покупку билетов
-
       this.purchasedSeats = this.selectedSeats.slice();
+
+      const buy = await api
+        .delete(`http://localhost:5000/api/travel/buy/${this.travelId}`, {
+          data: { remove_count: this.purchasedSeatsCount },
+        })
+        .then((res) => {
+          console.log(res);
+        });
       this.selectedSeats = [];
     },
   },
